@@ -11,7 +11,7 @@ app.use(cors())
 morgan.token("json", (req, res) => { return JSON.stringify(req.body) })
 app.use(morgan(":method :url => :status :res[content-length] - :response-time ms :json"))
 
-let people = 
+let persons = 
 [
   {
     name: "Arto Hellas",
@@ -40,19 +40,19 @@ app.get('/', (req, res) => {
 })
 
 app.get('/info', (req, res) => {
-  const numberOfPeople = people.length
+  const numberOfPeople = persons.length
   console.log(numberOfPeople)
   const reqTime = new Date()
-  res.send(`<p>Phonebook has info for ${numberOfPeople} people</p><p>${reqTime}</p>`)
+  res.send(`<p>Phonebook has info for ${numberOfPeople} persons</p><p>${reqTime}</p>`)
 })
 
-app.get('/api/people', (req, res) => {
-  res.json(people)
+app.get('/api/persons', (req, res) => {
+  res.json(persons)
 })
 
-app.get('/api/people/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res) => {
   const id = Number(req.params.id)
-  const person = people.find(person => person.id === id)
+  const person = persons.find(person => person.id === id)
 
   if (person) {
     res.json(person)
@@ -61,9 +61,9 @@ app.get('/api/people/:id', (req, res) => {
   }
 })
 
-app.delete('/api/people/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res) => {
   const id = Number(req.params.id)
-  people = people.filter(person => person.id !== id)
+  persons = persons.filter(person => person.id !== id)
 
   res.status(204).end()
 })
@@ -73,9 +73,9 @@ const generatedId = () => {
   return randomId
 }
 
-app.post('/api/people', (req, res) => {
+app.post('/api/persons', (req, res) => {
   const body = req.body
-  const existing = people.find(person => person.name === body.name)
+  const existing = persons.find(person => person.name === body.name)
   if(!body.name || !body.number) {
     return res.status(400).json({
       error: 'content missing'
@@ -91,7 +91,7 @@ app.post('/api/people', (req, res) => {
     number: body.number,
     id: generatedId()
   }
-  people = people.concat(person)
+  persons = persons.concat(person)
 
   res.json(person)
 })
