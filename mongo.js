@@ -8,8 +8,8 @@ if (process.argv.length < 3) {
 const password = process.argv[2]
 
 const url = 
-  `mongodb+srv://admin-kirsi:${password}@cluster0.tfs18.mongodb.net/phonebook-app?retryWrites=true&w=majority`
-
+  `mongodb+srv://fullstack:${password}@cluster0.rw0y3.mongodb.net/phonebook-app?retryWrites=true&w=majority`
+  
 mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true})
 
 const personSchema = new mongoose.Schema({
@@ -19,12 +19,19 @@ const personSchema = new mongoose.Schema({
 
 const Person = mongoose.model('Person', personSchema)
 
-const person = new Person({
+/*const person = new Person({
   name: "Arto Hellas",
   number: "040-123456",
 })
 
 person.save().then(res => {
   console.log('person saved!')
+  mongoose.connection.close()
+})*/
+
+Person.find({}).then(result => {
+  result.forEach(person => {
+    console.log(person)
+  })
   mongoose.connection.close()
 })
