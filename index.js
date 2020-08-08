@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const morgan = require('morgan')
+const mongoose = require('mongoose');
 
 app.use(express.json())
 app.use(express.static('build'))
@@ -11,7 +12,22 @@ app.use(cors())
 morgan.token("json", (req, res) => { return JSON.stringify(req.body) })
 app.use(morgan(":method :url => :status :res[content-length] - :response-time ms :json"))
 
-let people = 
+// run app: node index.js <cluster-password>
+const password = process.argv[2]
+
+const url = 
+  `mongodb+srv://fullstack:${password}@cluster0.rw0y3.mongodb.net/phonebook-app?retryWrites=true&w=majority`
+  
+mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true})
+
+const personSchema = new mongoose.Schema({
+  name: String, 
+  number: String
+})
+
+const Person = mongoose.model('Person', personSchema)
+
+/*let people = 
 [
   {
     name: "Arto Hellas",
@@ -33,7 +49,7 @@ let people =
     number: "39-23-6423122",
     id: 4
   },
-]
+]*/
 
 app.get('/', (req, res) => {
   res.send('hello world!')
@@ -47,7 +63,9 @@ app.get('/info', (req, res) => {
 })
 
 app.get('/api/people', (req, res) => {
-  res.json(people)
+  Person.find({}).then(people => {
+    res.json(people)
+  })
 })
 
 app.get('/api/people/:id', (req, res) => {
