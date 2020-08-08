@@ -5,15 +5,15 @@ const Person = require('./models/person')
 const cors = require('cors')
 const morgan = require('morgan')
 
-app.use(express.json())
+const people = []
+
 app.use(express.static('build'))
+app.use(express.json())
 app.use(cors())
 //app.use(morgan('tiny'))
 
 morgan.token("json", (req, res) => { return JSON.stringify(req.body) })
 app.use(morgan(":method :url => :status :res[content-length] - :response-time ms :json"))
-
-const people = []
 
 app.get('/', (req, res) => {
   res.send('hello world!')
@@ -43,10 +43,16 @@ app.get('/api/people', (req, res) => {
   }
 })*/
 
-app.get('/api/people/:id', (req, res) => {
-  Person.findById(req.params.id).then(person => {
-    res.json(person)
+app.get('/api/people/:id', (req, res, next) => {
+  Person.findById(req.params.id)
+  .then(person => {
+    if (person) {
+      res.json(person)
+    } else {
+      res.status(404).end()
+    }
   })
+  .catch(error => next(error))
 })
 
 /*app.delete('/api/people/:id', (req, res) => {
@@ -58,7 +64,11 @@ app.get('/api/people/:id', (req, res) => {
 
 // TODO: Fix
 app.delete('/api/people/:id', (req, res) => {
-  Person.findById(req.params.id).then(people.filter(person => person.id !== id))
+  Person.findByIdAndRemove(req.params.id)
+  .then(result => {
+    res.status(204).end()
+  })
+  .catch(err => next(err))  
 })
 
 /*const generatedId = () => {
@@ -66,7 +76,22 @@ app.delete('/api/people/:id', (req, res) => {
   return randomId
 }*/
 
-app.post('/api/people', (req, res) => {
+//TODO: Fix 3.17*
+app.put('/api/people', (req, res, next) => {
+  const body = req.body
+  const person = {
+    name: body.name, 
+    number: body.number
+  }
+
+  Person.findByIdAndUpdate(req.params.id, person, { new: true })
+    .then(updatedPerson => {
+      res.json(updatedPerson)
+    })
+    .catch(err => next(err))
+})
+
+app.post('/api/people', (req, res, next) => {
   const body = req.body
   const existing = people.find(person => person.name === body.name)
 
@@ -90,7 +115,27 @@ app.post('/api/people', (req, res) => {
   person.save().then(savedPerson => {
     res.json(savedPerson)
   })
+  .catch(err => next(err))
 })
+
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({ err: 'unknown endpoint' })
+}
+
+// handler or requests with unknown endpoint
+app.use(unknownEndpoint)
+
+const errorHandler = (err, req, res, next) => {
+  console.log(err.message)
+
+  if (err.name === 'CastError') {
+    return res.status(400).send({ err: 'malinformatted id' })
+  }
+  next(err)
+}
+
+// handler of requests with result to errors
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
