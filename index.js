@@ -15,10 +15,6 @@ app.use(cors())
 morgan.token("json", (req, res) => { return JSON.stringify(req.body) })
 app.use(morgan(":method :url => :status :res[content-length] - :response-time ms :json"))
 
-app.get('/', (req, res) => {
-  res.send('hello world!')
-})
-
 app.get('/info', (req, res) => {
   const numberOfPeople = people.length
   console.log(numberOfPeople)
@@ -63,7 +59,7 @@ app.get('/api/people/:id', (req, res, next) => {
 })*/
 
 // TODO: Fix
-app.delete('/api/people/:id', (req, res) => {
+app.delete('/api/people/:id', (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
   .then(result => {
     res.status(204).end()
@@ -76,15 +72,13 @@ app.delete('/api/people/:id', (req, res) => {
   return randomId
 }*/
 
-//TODO: Fix 3.17*
-app.put('/api/people', (req, res, next) => {
+//TODO: Fix 3.17: no need to push add button twice to update
+app.put('/api/people/:id', (req, res, next) => {
   const body = req.body
-  const person = {
-    name: body.name, 
-    number: body.number
-  }
+  const person = people.find(person => person.id === req.params.id)
+  const changedPerson = { ...person, number: body.number}
 
-  Person.findByIdAndUpdate(req.params.id, person, { new: true })
+  Person.findByIdAndUpdate(req.params.id, changedPerson)
     .then(updatedPerson => {
       res.json(updatedPerson)
     })
