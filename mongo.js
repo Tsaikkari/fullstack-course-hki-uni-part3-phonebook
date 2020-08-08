@@ -24,7 +24,7 @@ const person = new Person({
   number: process.argv[4]
 })
 
-person.save().then(res => {
+//person.save().then(res => {
   const name = process.argv[3]
   if (!process.argv[3] && !process.argv[4]) {
     Person.find({}).then(result => {
@@ -34,8 +34,10 @@ person.save().then(res => {
       mongoose.connection.close()
     })
   } else {
-    console.log(`added ${name} to phonebook`)
-    mongoose.connection.close()
+    person.save().then(res => {
+      console.log(`added ${name} to phonebook`)
+      mongoose.connection.close()
+    })
   }
-})
+//})
 
