@@ -1,5 +1,7 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
+const Person = require('./models/person')
 const cors = require('cors')
 const morgan = require('morgan')
 const mongoose = require('mongoose');
@@ -11,29 +13,6 @@ app.use(cors())
 
 morgan.token("json", (req, res) => { return JSON.stringify(req.body) })
 app.use(morgan(":method :url => :status :res[content-length] - :response-time ms :json"))
-
-// run app: node index.js <cluster-password> or nmp start <cluster-password>
-const password = process.argv[2]
-
-const url = 
-  `mongodb+srv://fullstack:${password}@cluster0.rw0y3.mongodb.net/phonebook-app?retryWrites=true&w=majority`
-  
-mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true})
-
-const personSchema = new mongoose.Schema({
-  name: String, 
-  number: String
-})
-
-personSchema.set('toJSON', {
-  transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    delete returnedObject.__v
-  }
-})
-
-const Person = mongoose.model('Person', personSchema)
 
 /*let people = 
 [
