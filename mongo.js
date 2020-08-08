@@ -24,20 +24,19 @@ const person = new Person({
   number: process.argv[4]
 })
 
-//person.save().then(res => {
-  const name = process.argv[3]
-  if (!process.argv[3] && !process.argv[4]) {
-    Person.find({}).then(result => {
-      result.forEach(person => {
-        console.log(person)
-      })
-      mongoose.connection.close()
+const name = process.argv[3]
+if (!process.argv[3]) {
+  Person.find({}).then(result => {
+    result.forEach(person => {
+      console.log(person)
     })
-  } else {
-    person.save().then(res => {
-      console.log(`added ${name} to phonebook`)
-      mongoose.connection.close()
-    })
-  }
-//})
+    mongoose.connection.close()
+  })
+} else {
+  person.save().then(res => {
+    console.log(`added ${name} to phonebook`)
+    mongoose.connection.close()
+  })
+}
+
 
