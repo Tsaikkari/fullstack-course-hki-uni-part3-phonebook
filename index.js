@@ -4,6 +4,7 @@ const app = express()
 const Person = require('./models/person')
 const cors = require('cors')
 const morgan = require('morgan')
+const { response } = require('express')
 
 const people = []
 
@@ -71,7 +72,6 @@ app.delete('/api/people/:id', (req, res, next) => {
   return randomId
 }*/
 
-//TODO: Fix 3.17*: no need to push add button twice to update
 app.put('/api/people/:id', (req, res, next) => {
   const body = req.body
   const person = people.find(person => person.id === req.params.id)
@@ -105,8 +105,13 @@ app.post('/api/people', (req, res, next) => {
   })
   //people = people.concat(person)
 
-  person.save().then(savedPerson => {
-    res.json(savedPerson)
+  person
+  .save()
+  .then(savedPerson => {
+    return savedPerson.toJSON()
+  })
+  .then(savedAndFormattedPerson => {
+    res.json(savedAndFormattedPerson)
   })
   .catch(err => next(err))
 })
