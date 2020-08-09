@@ -88,7 +88,7 @@ app.post('/api/people', (req, res, next) => {
   const body = req.body
   const existing = people.find(person => person.name === body.name)
 
-  if(!body.name || !body.number) {
+  /*if(!body.name || !body.number) {
     return res.status(400).json({
       error: 'content missing'
     })
@@ -96,7 +96,7 @@ app.post('/api/people', (req, res, next) => {
     return res.status(400).json({
       error: 'name must be unique'
     })
-  }
+  }*/
 
   const person = new Person({
     name: body.name,
@@ -123,6 +123,8 @@ const errorHandler = (err, req, res, next) => {
 
   if (err.name === 'CastError') {
     return res.status(400).send({ err: 'malinformatted id' })
+  } else if (err.name === 'ValidationError') {
+    return res.status(400).json({ err: err.message })
   }
   next(err)
 }
