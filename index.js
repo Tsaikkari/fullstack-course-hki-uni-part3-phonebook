@@ -16,10 +16,10 @@ morgan.token("json", (req, res) => { return JSON.stringify(req.body) })
 app.use(morgan(":method :url => :status :res[content-length] - :response-time ms :json"))
 
 app.get('/info', (req, res) => {
-  const numberOfPeople = people.length
-  console.log(numberOfPeople)
   const reqTime = new Date()
-  res.send(`<p>Phonebook has info for ${numberOfPeople} people</p><p>${reqTime}</p>`)
+  Person.find({}).then(people => {
+    res.send(`<p>Phonebook has info for ${people.length} people</p><p>${reqTime}</p>`)
+  })
 })
 
 app.get('/api/people', (req, res) => {
@@ -58,7 +58,6 @@ app.get('/api/people/:id', (req, res, next) => {
   res.status(204).end()
 })*/
 
-// TODO: Fix
 app.delete('/api/people/:id', (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
   .then(result => {
@@ -72,7 +71,7 @@ app.delete('/api/people/:id', (req, res, next) => {
   return randomId
 }*/
 
-//TODO: Fix 3.17: no need to push add button twice to update
+//TODO: Fix 3.17*: no need to push add button twice to update
 app.put('/api/people/:id', (req, res, next) => {
   const body = req.body
   const person = people.find(person => person.id === req.params.id)
