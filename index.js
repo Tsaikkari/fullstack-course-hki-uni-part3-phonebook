@@ -4,7 +4,6 @@ const app = express()
 const Person = require('./models/person')
 const cors = require('cors')
 const morgan = require('morgan')
-const { response } = require('express')
 
 const people = []
 
@@ -13,8 +12,8 @@ app.use(express.json())
 app.use(cors())
 //app.use(morgan('tiny'))
 
-morgan.token("json", (req, res) => { return JSON.stringify(req.body) })
-app.use(morgan(":method :url => :status :res[content-length] - :response-time ms :json"))
+morgan.token('json', (req) => { return JSON.stringify(req.body) })
+app.use(morgan(':method :url => :status :res[content-length] - :response-time ms :json'))
 
 app.get('/info', (req, res) => {
   const reqTime = new Date()
@@ -42,14 +41,14 @@ app.get('/api/people', (req, res) => {
 
 app.get('/api/people/:id', (req, res, next) => {
   Person.findById(req.params.id)
-  .then(person => {
-    if (person) {
-      res.json(person)
-    } else {
-      res.status(404).end()
-    }
-  })
-  .catch(error => next(error))
+    .then(person => {
+      if (person) {
+        res.json(person)
+      } else {
+        res.status(404).end()
+      }
+    })
+    .catch(error => next(error))
 })
 
 /*app.delete('/api/people/:id', (req, res) => {
@@ -61,10 +60,10 @@ app.get('/api/people/:id', (req, res, next) => {
 
 app.delete('/api/people/:id', (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
-  .then(result => {
-    res.status(204).end()
-  })
-  .catch(err => next(err))  
+    .then(() => {
+      res.status(204).end()
+    })
+    .catch(err => next(err))
 })
 
 /*const generatedId = () => {
@@ -75,7 +74,7 @@ app.delete('/api/people/:id', (req, res, next) => {
 app.put('/api/people/:id', (req, res, next) => {
   const body = req.body
   const person = people.find(person => person.id === req.params.id)
-  const changedPerson = { ...person, number: body.number}
+  const changedPerson = { ...person, number: body.number }
 
   Person.findByIdAndUpdate(req.params.id, changedPerson, { runValidators: true })
     .then(updatedPerson => {
@@ -86,7 +85,7 @@ app.put('/api/people/:id', (req, res, next) => {
 
 app.post('/api/people', (req, res, next) => {
   const body = req.body
-  const existing = people.find(person => person.name === body.name)
+  //const existing = people.find(person => person.name === body.name)
 
   /*if(!body.name || !body.number) {
     return res.status(400).json({
@@ -106,12 +105,12 @@ app.post('/api/people', (req, res, next) => {
   //people = people.concat(person)
 
   person
-  .save()
-  .then(savedPerson => savedPerson.toJSON())
-  .then(savedAndFormattedPerson => {
-    res.json(savedAndFormattedPerson)
-  })
-  .catch(err => next(err))
+    .save()
+    .then(savedPerson => savedPerson.toJSON())
+    .then(savedAndFormattedPerson => {
+      res.json(savedAndFormattedPerson)
+    })
+    .catch(err => next(err))
 })
 
 const unknownEndpoint = (req, res) => {
