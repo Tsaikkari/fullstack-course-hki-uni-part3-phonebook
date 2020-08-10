@@ -88,7 +88,6 @@ app.put('/api/people/:id', (req, res, next) => {
 app.post('/api/people', (req, res, next) => {
   const body = req.body
   const existing = people.find(person => person.name === body.name)
-  const updateValidation = { runValidators: true }
 
   /*if(!body.name || !body.number) {
     return res.status(400).json({
