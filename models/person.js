@@ -41,10 +41,6 @@ personSchema.plugin(uniqueValidator);
 
 /*const Person = mongoose.model('Person', personSchema)
 
-Person.schema.path('name').validate(value => {
-  return /ai/i.test(value)
-}, 'Too short name')
-
 Person.schema.path('number').validate(value => {
   return /040-12/i.test(value)
 }, 'Too short number')*/
