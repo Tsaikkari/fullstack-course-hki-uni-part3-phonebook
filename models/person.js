@@ -39,10 +39,4 @@ personSchema.set('toJSON', {
 
 personSchema.plugin(uniqueValidator);
 
-/*const Person = mongoose.model('Person', personSchema)
-
-Person.schema.path('number').validate(value => {
-  return /040-12/i.test(value)
-}, 'Too short number')*/
-
 module.exports = mongoose.model('Person', personSchema)
